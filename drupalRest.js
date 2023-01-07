@@ -1,4 +1,4 @@
-const queryString = require('qs')
+const async = require('async')
 
 const entityConfiguration = {
   node: {
@@ -72,5 +72,36 @@ module.exports = class DrupalREST {
 
   nodeSave (id, content, options, callback) {
     this.entitySave('node', id, content, options, callback)
+  }
+
+  loadRestExport (path, options, callback) {
+    if (!('paginated' in options)) {
+      options.paginated = true
+    }
+
+    const sep = path.includes('?') ? '&' : '?'
+    let page = 0
+    let notDone = true
+    let result = []
+
+    async.doWhilst(
+      (callback) => {
+	fetch(this.options.url + '/' + path + sep + 'page=' + page + '&_format=json', {
+	  headers: this.sessionHeaders
+	})
+	  .then(req => req.json())
+	  .then(data => {
+	    if (data.length === 0) {
+	      notDone = false
+	    }
+
+	    page++
+	    result = result.concat(data)
+	    callback()
+	  })
+      },
+      (callback) => callback(null, notDone),
+      (err) => callback(null, result)
+    )
   }
 }

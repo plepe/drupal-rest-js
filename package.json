@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/plepe/drupal-rest-js/issues"
   },
-  "homepage": "https://github.com/plepe/drupal-rest-js#readme"
+  "homepage": "https://github.com/plepe/drupal-rest-js#readme",
+  "dependencies": {
+    "async": "^3.2.4"
+  }
 }
