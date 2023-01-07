@@ -1,0 +1,19 @@
+{
+  "name": "drupal-rest",
+  "version": "0.0.0",
+  "description": "NodeJS module to access the REST API of a Drupal installation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/plepe/drupal-rest-js.git"
+  },
+  "author": "Stephan Bösch-Plepelits <skunk@xover.mud.at>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/plepe/drupal-rest-js/issues"
+  },
+  "homepage": "https://github.com/plepe/drupal-rest-js#readme"
+}
