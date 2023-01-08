@@ -74,6 +74,14 @@ module.exports = class DrupalREST {
     this.entitySave('node', id, content, options, callback)
   }
 
+  taxonomyGet (id, options, callback) {
+    this.entityGet('taxonomy', id, options, callback)
+  }
+
+  taxonoySave (id, content, options, callback) {
+    this.entitySave('taxonomy', id, content, options, callback)
+  }
+
   loadRestExport (path, options, callback) {
     if (!('paginated' in options)) {
       options.paginated = true
