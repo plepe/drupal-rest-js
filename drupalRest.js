@@ -77,6 +77,21 @@ module.exports = class DrupalREST {
     this.entitySave('node', id, content, options, callback)
   }
 
+
+  fileUpload (file, entityPath, options, callback) {
+    const headers = { ...this.sessionHeaders }
+    headers['Content-Type'] = 'application/octet-stream'
+    headers['Content-Disposition'] = 'file; filename="' + file.filename + '"'
+
+    fetch(this.options.url + '/file/upload/' + entityPath + '?_format=json', {
+      method: 'post',
+      body: file.content,
+      headers
+    })
+      .then(req => req.json())
+      .then(data => callback(null, data))
+  }
+
   taxonomyGet (id, options, callback) {
     this.entityGet('taxonomy', id, options, callback)
   }
