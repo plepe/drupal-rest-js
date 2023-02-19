@@ -6,6 +6,11 @@ const entityConfiguration = {
     createHandle: 'node',
     idField: 'nid'
   },
+  media: {
+    entityHandle: 'media/%/edit',
+    createHandle: 'entity/media',
+    idField: 'mid'
+  },
   taxonomy: {
     entityHandle: 'taxonomy/term/%',
     createHandle: 'taxonomy/term',
@@ -98,6 +103,14 @@ module.exports = class DrupalREST {
 
   taxonomySave (id, content, options, callback) {
     this.entitySave('taxonomy', id, content, options, callback)
+  }
+
+  mediaGet (id, options, callback) {
+    this.entityGet('media', id, options, callback)
+  }
+
+  mediaSave (id, content, options, callback) {
+    this.entitySave('media', id, content, options, callback)
   }
 
   loadRestExport (path, options, callback) {
