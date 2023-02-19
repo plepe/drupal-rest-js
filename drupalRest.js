@@ -2,11 +2,13 @@ const async = require('async')
 
 const entityConfiguration = {
   node: {
-    prefix: 'node',
+    entityHandle: 'node/%',
+    createHandle: 'node',
     idField: 'nid'
   },
   taxonomy: {
-    prefix: 'taxonomy/term',
+    entityHandle: 'taxonomy/term/%',
+    createHandle: 'taxonomy/term',
     idField: 'tid'
   }
 }
@@ -44,7 +46,7 @@ module.exports = class DrupalREST {
   entityGet (entityType, id, options, callback) {
     const def = entityConfiguration[entityType]
 
-    fetch(this.options.url + '/' + def.prefix + '/' + id + '?_format=json', {
+    fetch(this.options.url + '/' + def.entityHandle + '/' + id + '?_format=json', {
       headers: this.sessionHeaders
     })
       .then(req => req.json())
@@ -54,7 +56,8 @@ module.exports = class DrupalREST {
   entitySave (entityType, id, content, options, callback) {
     const def = entityConfiguration[entityType]
 
-    fetch(this.options.url + '/' + def.prefix + (id ? '/' + id : '') + '?_format=json', {
+    const url = this.options.url + '/' + (id ? def.entityHandle + '/' : def.createHandle)
+    fetch(url + '?_format=json', {
       method: id ? 'PATCH' : 'POST',
       body: JSON.stringify(content),
       headers: {
@@ -78,7 +81,7 @@ module.exports = class DrupalREST {
     this.entityGet('taxonomy', id, options, callback)
   }
 
-  taxonoySave (id, content, options, callback) {
+  taxonomySave (id, content, options, callback) {
     this.entitySave('taxonomy', id, content, options, callback)
   }
 
