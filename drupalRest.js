@@ -15,6 +15,11 @@ const entityConfiguration = {
     entityHandle: 'taxonomy/term/%',
     createHandle: 'taxonomy/term',
     idField: 'tid'
+  },
+  user: {
+    entityHandle: 'user/%',
+    createHandle: 'entity/user',
+    idField: 'uid'
   }
 }
 
@@ -111,6 +116,14 @@ module.exports = class DrupalREST {
 
   mediaSave (id, content, options, callback) {
     this.entitySave('media', id, content, options, callback)
+  }
+
+  userGet (id, options, callback) {
+    this.entityGet('user', id, options, callback)
+  }
+
+  userSave (id, content, options, callback) {
+    this.entitySave('user', id, content, options, callback)
   }
 
   loadRestExport (path, options, callback) {
