@@ -61,7 +61,7 @@ module.exports = class DrupalREST {
       headers: this.sessionHeaders
     })
       .then(req => req.json())
-      .then(data => callback(null, data))
+      .then(data => global.setTimeout(() => callback(null, data), 0))
   }
 
   entitySave (entityType, id, content, options, callback) {
@@ -77,7 +77,7 @@ module.exports = class DrupalREST {
       }
     })
       .then(req => req.json())
-      .then(data => callback(null, data))
+      .then(data => global.setTimeout(() => callback(null, data), 0))
       .catch(error => {
 	console.error('saving ' + entityType + '/' + id + ':', error)
 	global.setTimeout(() => callback(error), 0)
@@ -104,7 +104,7 @@ module.exports = class DrupalREST {
       headers
     })
       .then(req => req.json())
-      .then(data => callback(null, data))
+      .then(data => global.setTimeout(() => callback(null, data), 0))
   }
 
   taxonomyGet (id, options, callback) {
