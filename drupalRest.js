@@ -77,6 +77,10 @@ module.exports = class DrupalREST {
     })
       .then(req => req.json())
       .then(data => callback(null, data))
+      .catch(error => {
+	console.error('saving ' + entityType + '/' + id + ':', error)
+	global.setTimeout(() => callback(error), 0)
+      })
   }
 
   nodeGet (id, options, callback) {
@@ -150,6 +154,10 @@ module.exports = class DrupalREST {
 	    page++
 	    result = result.concat(data)
 	    callback()
+	  })
+	  .catch(error => {
+	    console.error('loading rest export ' + path + ':', error)
+	    callback(error)
 	  })
       },
       (callback) => callback(null, notDone),
