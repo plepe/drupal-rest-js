@@ -56,7 +56,8 @@ module.exports = class DrupalREST {
   entityGet (entityType, id, options, callback) {
     const def = entityConfiguration[entityType]
 
-    fetch(this.options.url + '/' + def.entityHandle + '/' + id + '?_format=json', {
+    const url = this.options.url + '/' + def.entityHandle.replace('%', id)
+    fetch(url + '?_format=json', {
       headers: this.sessionHeaders
     })
       .then(req => req.json())
@@ -66,7 +67,7 @@ module.exports = class DrupalREST {
   entitySave (entityType, id, content, options, callback) {
     const def = entityConfiguration[entityType]
 
-    const url = this.options.url + '/' + (id ? def.entityHandle + '/' : def.createHandle)
+    const url = this.options.url + '/' + (id ? def.entityHandle.replace('%', id) : def.createHandle)
     fetch(url + '?_format=json', {
       method: id ? 'PATCH' : 'POST',
       body: JSON.stringify(content),
