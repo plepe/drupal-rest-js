@@ -49,12 +49,14 @@ module.exports = class DrupalREST {
 	  const cookie = req.headers.get('Set-Cookie').split(/;/g)[0]
 	  this.sessionHeaders['Cookie'] = cookie
 	}
-	return req.json()
+	return req.text()
       })
-      .then(data => {
+      .then(body => processJSONResult(body, (err, data) => {
+	if (err) { return callback(err) }
+
 	this.sessionHeaders['X-CSRF-Token'] = data.csrf_token
 	callback(null)
-      })
+      }))
   }
 
   entityGet (entityType, id, options, callback) {
