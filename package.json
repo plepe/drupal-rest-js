@@ -4,7 +4,8 @@
   "description": "NodeJS module to access the REST API of a Drupal installation",
   "main": "drupalRest.js",
   "scripts": {
-    "doc": "jsdoc -d doc/ drupalRest.js"
+    "doc": "jsdoc -d doc/ drupalRest.js",
+    "lint": "standard --fix drupalRest.js"
   },
   "repository": {
     "type": "git",
@@ -20,6 +21,7 @@
     "async": "^3.2.4"
   },
   "devDependencies": {
-    "jsdoc": "^4.0.2"
+    "jsdoc": "^4.0.2",
+    "standard": "^17.0.0"
   }
 }
