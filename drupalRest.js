@@ -60,8 +60,11 @@ module.exports = class DrupalREST {
     fetch(url + '?_format=json', {
       headers: this.sessionHeaders
     })
-      .then(req => req.json())
-      .then(data => global.setTimeout(() => callback(null, data), 0))
+      .then(req => req.text())
+      .then(body => processJSONResult(body, callback))
+      .catch(error => {
+	global.setTimeout(() => callback(error), 0)
+      })
   }
 
   entitySave (entityType, id, content, options, callback) {
@@ -76,8 +79,8 @@ module.exports = class DrupalREST {
 	...this.sessionHeaders
       }
     })
-      .then(req => req.json())
-      .then(data => global.setTimeout(() => callback(null, data), 0))
+      .then(req => req.text())
+      .then(body => processJSONResult(body, callback))
       .catch(error => {
 	console.error('saving ' + entityType + '/' + id + ':', error)
 	global.setTimeout(() => callback(error), 0)
@@ -103,9 +106,13 @@ module.exports = class DrupalREST {
       body: file.content,
       headers
     })
-      .then(req => req.json())
-      .then(data => global.setTimeout(() => callback(null, data), 0))
-  }
+      .then(req => req.text())
+      .then(body => processJSONResult(body, callback))
+      .catch(error => {
+	console.error('uploading ' + entityPath + ':', error)
+	global.setTimeout(() => callback(error), 0)
+      })
+}
 
   taxonomyGet (id, options, callback) {
     this.entityGet('taxonomy', id, options, callback)
@@ -165,4 +172,16 @@ module.exports = class DrupalREST {
       (err) => callback(null, result)
     )
   }
+}
+
+function processJSONResult (body, callback) {
+  let data
+  try {
+    data = JSON.parse(body)
+  }
+  catch (e) {
+    return callback(new Error(body))
+  }
+
+  global.setTimeout(() => callback(null, data), 0)
 }
