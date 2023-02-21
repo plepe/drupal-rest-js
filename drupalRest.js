@@ -59,6 +59,10 @@ module.exports = class DrupalREST {
 
   entityGet (entityType, id, options, callback) {
     const def = entityConfiguration[entityType]
+    if (typeof options === 'function') {
+      callback = options
+      options = {}
+    }
 
     const url = this.options.url + '/' + def.entityHandle.replace('%', id)
     fetch(url + '?_format=json', {
@@ -73,6 +77,10 @@ module.exports = class DrupalREST {
 
   entitySave (entityType, id, content, options, callback) {
     const def = entityConfiguration[entityType]
+    if (typeof options === 'function') {
+      callback = options
+      options = {}
+    }
 
     const url = this.options.url + '/' + (id ? def.entityHandle.replace('%', id) : def.createHandle)
     fetch(url + '?_format=json', {
