@@ -195,13 +195,19 @@ module.exports = class DrupalREST {
 }
 
 function processJSONResult (body, callback) {
-  let data
+  let data = null
+  let error = null
   try {
     data = JSON.parse(body)
   }
   catch (e) {
-    return callback(new Error(body))
+    error = new Error(body)
   }
 
-  global.setTimeout(() => callback(null, data), 0)
+  if (data && 'message' in data) {
+    error = new Error(data.message)
+    data = null
+  }
+
+  global.setTimeout(() => callback(error, data), 0)
 }
