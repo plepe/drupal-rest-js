@@ -99,6 +99,35 @@ module.exports = class DrupalREST {
       })
   }
 
+  entityRemove (entityType, id, options, callback) {
+    const def = entityConfiguration[entityType]
+    if (typeof options === 'function') {
+      callback = options
+      options = {}
+    }
+
+    const url = this.options.url + '/' + def.entityHandle.replace('%', id)
+    fetch(url + '?_format=json', {
+      method: 'DELETE',
+      headers: {
+	'Content-Type': 'application/json',
+	...this.sessionHeaders
+      }
+    })
+      .then(req => req.text())
+      .then(body => {
+	if (body === '') {
+	  return global.setTimeout(() => callback(null), 0)
+	}
+
+	processJSONResult(body, callback)
+      })
+      .catch(error => {
+	console.error('deleting ' + entityType + '/' + id + ':', error)
+	global.setTimeout(() => callback(error), 0)
+      })
+  }
+
   nodeGet (id, options, callback) {
     this.entityGet('node', id, options, callback)
   }
@@ -107,6 +136,9 @@ module.exports = class DrupalREST {
     this.entitySave('node', id, content, options, callback)
   }
 
+  nodeRemove (id, options, callback) {
+    this.entityRemove('node', id, options, callback)
+  }
 
   fileUpload (file, entityPath, options, callback) {
     const headers = { ...this.sessionHeaders }
@@ -134,12 +166,20 @@ module.exports = class DrupalREST {
     this.entitySave('taxonomy', id, content, options, callback)
   }
 
+  taxonomyRemove (id, options, callback) {
+    this.entityRemove('taxonomy', id, options, callback)
+  }
+
   mediaGet (id, options, callback) {
     this.entityGet('media', id, options, callback)
   }
 
   mediaSave (id, content, options, callback) {
     this.entitySave('media', id, content, options, callback)
+  }
+
+  mediaRemove (id, options, callback) {
+    this.entityRemove('media', id, options, callback)
   }
 
   userGet (id, options, callback) {
@@ -150,12 +190,20 @@ module.exports = class DrupalREST {
     this.entitySave('user', id, content, options, callback)
   }
 
+  userRemove (id, options, callback) {
+    this.entityRemove('user', id, options, callback)
+  }
+
   fileGet (id, options, callback) {
     this.entityGet('file', id, options, callback)
   }
 
   fileSave (id, content, options, callback) {
     this.entitySave('file', id, content, options, callback)
+  }
+
+  fileRemove (id, options, callback) {
+    this.entityRemove('file', id, options, callback)
   }
 
   loadRestExport (path, options, callback) {
