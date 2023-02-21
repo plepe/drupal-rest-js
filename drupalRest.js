@@ -34,6 +34,11 @@ module.exports = class DrupalREST {
   }
 
   login (callback) {
+    if (!this.options.user) {
+      // anonymous access
+      return callback(null)
+    }
+
     fetch(this.options.url + '/user/login?_format=json', {
       method: 'POST',
       header: {
