@@ -327,6 +327,13 @@ class DrupalREST {
     this.entityRemove('file', id, options, callback)
   }
 
+  /**
+   * Load a REST export
+   * @param {string} path - The path of the REST view
+   * @param {Object} options - Options
+   * @param {boolean} [options.paginated=true] - If true, keep retrieving all pages of the view, until an empty result is returned.
+   * @param {function} callback - The callback will receive (err, list). List is an array of all results.
+   */
   loadRestExport (path, options, callback) {
     if (!('paginated' in options)) {
       options.paginated = true
