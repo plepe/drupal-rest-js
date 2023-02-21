@@ -52,25 +52,25 @@ class DrupalREST {
     fetch(this.options.url + '/user/login?_format=json', {
       method: 'POST',
       header: {
-	'Content-Type': 'application/json',
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-	name: this.options.user,
-	pass: this.options.pass,
+        name: this.options.user,
+        pass: this.options.pass
       })
     })
       .then(req => {
-	if (req.headers.has('Set-Cookie')) {
-	  const cookie = req.headers.get('Set-Cookie').split(/;/g)[0]
-	  this.sessionHeaders['Cookie'] = cookie
-	}
-	return req.text()
+        if (req.headers.has('Set-Cookie')) {
+          const cookie = req.headers.get('Set-Cookie').split(/;/g)[0]
+          this.sessionHeaders.Cookie = cookie
+        }
+        return req.text()
       })
       .then(body => processJSONResult(body, (err, data) => {
-	if (err) { return callback(err) }
+        if (err) { return callback(err) }
 
-	this.sessionHeaders['X-CSRF-Token'] = data.csrf_token
-	callback(null)
+        this.sessionHeaders['X-CSRF-Token'] = data.csrf_token
+        callback(null)
       }))
   }
 
@@ -88,7 +88,7 @@ class DrupalREST {
       .then(req => req.text())
       .then(body => processJSONResult(body, callback))
       .catch(error => {
-	global.setTimeout(() => callback(error), 0)
+        global.setTimeout(() => callback(error), 0)
       })
   }
 
@@ -104,15 +104,15 @@ class DrupalREST {
       method: id ? 'PATCH' : 'POST',
       body: JSON.stringify(content),
       headers: {
-	'Content-Type': 'application/json',
-	...this.sessionHeaders
+        'Content-Type': 'application/json',
+        ...this.sessionHeaders
       }
     })
       .then(req => req.text())
       .then(body => processJSONResult(body, callback))
       .catch(error => {
-	console.error('saving ' + entityType + '/' + id + ':', error)
-	global.setTimeout(() => callback(error), 0)
+        console.error('saving ' + entityType + '/' + id + ':', error)
+        global.setTimeout(() => callback(error), 0)
       })
   }
 
@@ -127,21 +127,21 @@ class DrupalREST {
     fetch(url + '?_format=json', {
       method: 'DELETE',
       headers: {
-	'Content-Type': 'application/json',
-	...this.sessionHeaders
+        'Content-Type': 'application/json',
+        ...this.sessionHeaders
       }
     })
       .then(req => req.text())
       .then(body => {
-	if (body === '') {
-	  return global.setTimeout(() => callback(null), 0)
-	}
+        if (body === '') {
+          return global.setTimeout(() => callback(null), 0)
+        }
 
-	processJSONResult(body, callback)
+        processJSONResult(body, callback)
       })
       .catch(error => {
-	console.error('deleting ' + entityType + '/' + id + ':', error)
-	global.setTimeout(() => callback(error), 0)
+        console.error('deleting ' + entityType + '/' + id + ':', error)
+        global.setTimeout(() => callback(error), 0)
       })
   }
 
@@ -198,10 +198,10 @@ class DrupalREST {
       .then(req => req.text())
       .then(body => processJSONResult(body, callback))
       .catch(error => {
-	console.error('uploading ' + entityPath + ':', error)
-	global.setTimeout(() => callback(error), 0)
+        console.error('uploading ' + entityPath + ':', error)
+        global.setTimeout(() => callback(error), 0)
       })
-}
+  }
 
   /**
    * Load the JSON structure for a taxonomy term
@@ -339,26 +339,26 @@ class DrupalREST {
 
     async.doWhilst(
       (callback) => {
-	fetch(this.options.url + '/' + path + sep + 'page=' + page + '&_format=json', {
-	  headers: this.sessionHeaders
-	})
-	  .then(req => req.json())
-	  .then(data => {
-	    if (data.length === 0) {
-	      notDone = false
-	    }
+        fetch(this.options.url + '/' + path + sep + 'page=' + page + '&_format=json', {
+          headers: this.sessionHeaders
+        })
+          .then(req => req.json())
+          .then(data => {
+            if (data.length === 0) {
+              notDone = false
+            }
 
-	    page++
-	    result = result.concat(data)
-	    callback()
-	  })
-	  .catch(error => {
-	    console.error('loading rest export ' + path + ':', error)
-	    callback(error)
-	  })
+            page++
+            result = result.concat(data)
+            callback()
+          })
+          .catch(error => {
+            console.error('loading rest export ' + path + ':', error)
+            callback(error)
+          })
       },
       (callback) => callback(null, notDone),
-      (err) => callback(null, result)
+      (err) => callback(err, result)
     )
   }
 }
@@ -368,8 +368,7 @@ function processJSONResult (body, callback) {
   let error = null
   try {
     data = JSON.parse(body)
-  }
-  catch (e) {
+  } catch (e) {
     error = new Error(body)
   }
 
