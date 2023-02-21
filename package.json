@@ -4,7 +4,7 @@
   "description": "NodeJS module to access the REST API of a Drupal installation",
   "main": "drupalRest.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "doc": "jsdoc -d doc/ drupalRest.js"
   },
   "repository": {
     "type": "git",
@@ -18,5 +18,8 @@
   "homepage": "https://github.com/plepe/drupal-rest-js#readme",
   "dependencies": {
     "async": "^3.2.4"
+  },
+  "devDependencies": {
+    "jsdoc": "^4.0.2"
   }
 }
