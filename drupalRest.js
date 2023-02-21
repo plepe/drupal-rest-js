@@ -16,6 +16,10 @@ const entityConfiguration = {
     createHandle: 'taxonomy/term',
     idField: 'tid'
   },
+  file: {
+    entityHandle: 'entity/file/%',
+    idField: 'fid'
+  },
   user: {
     entityHandle: 'user/%',
     createHandle: 'entity/user',
@@ -136,6 +140,14 @@ module.exports = class DrupalREST {
 
   userSave (id, content, options, callback) {
     this.entitySave('user', id, content, options, callback)
+  }
+
+  fileGet (id, options, callback) {
+    this.entityGet('file', id, options, callback)
+  }
+
+  fileSave (id, content, options, callback) {
+    this.entitySave('file', id, content, options, callback)
   }
 
   loadRestExport (path, options, callback) {
