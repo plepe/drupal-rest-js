@@ -332,6 +332,7 @@ class DrupalREST {
    * @param {string} path - The path of the REST view
    * @param {Object} options - Options
    * @param {boolean} [options.paginated=true] - If true, keep retrieving all pages of the view, until an empty result is returned.
+   * @param {function} [options.each] - A function which will be called for every item as soon as it is loaded. Called with (item, index).
    * @param {function} callback - The callback will receive (err, list). List is an array of all results.
    */
   loadRestExport (path, options, callback) {
@@ -356,6 +357,10 @@ class DrupalREST {
             }
 
             page++
+	    if (options.each) {
+	      data.forEach((item, i) => options.each(item, i + result.length))
+	    }
+
             result = result.concat(data)
             callback()
           })
