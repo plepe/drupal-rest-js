@@ -99,21 +99,32 @@ class DrupalREST {
       options = {}
     }
 
-    const url = this.options.url + '/' + (id ? def.entityHandle.replace('%', id) : def.createHandle)
-    fetch(url + '?_format=json', {
-      method: id ? 'PATCH' : 'POST',
-      body: JSON.stringify(content),
-      headers: {
-        'Content-Type': 'application/json',
-        ...this.sessionHeaders
+    async.eachOf(
+      content,
+      (a, key, done) => async.eachOf(a, (value, index, done) => {
+        done()
+      }, done),
+      (err) => {
+        if (err) { return callback(err) }
+        console.log(content)
+
+        const url = this.options.url + '/' + (id ? def.entityHandle.replace('%', id) : def.createHandle)
+        fetch(url + '?_format=json', {
+          method: id ? 'PATCH' : 'POST',
+          body: JSON.stringify(content),
+          headers: {
+            'Content-Type': 'application/json',
+            ...this.sessionHeaders
+          }
+        })
+          .then(req => req.text())
+          .then(body => processJSONResult(body, callback))
+          .catch(error => {
+            console.error('saving ' + entityType + '/' + id + ':', error)
+            global.setTimeout(() => callback(error), 0)
+          })
       }
-    })
-      .then(req => req.text())
-      .then(body => processJSONResult(body, callback))
-      .catch(error => {
-        console.error('saving ' + entityType + '/' + id + ':', error)
-        global.setTimeout(() => callback(error), 0)
-      })
+    )
   }
 
   entityRemove (entityType, id, options, callback) {
