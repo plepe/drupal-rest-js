@@ -180,7 +180,8 @@ class DrupalREST {
    * Upload a file
    * @param {Object} file - A structure describing the file
    * @param {string} file.filename - Filename of the file
-   * @param {*} file.content - Content of the file (whatever fetch accepts, e.g. string, Blob, ...)
+   * @param {*} [file.content] - Content of the file (whatever fetch accepts, e.g. string, Blob, ...)
+   * @param {string} [file.src] - Source of the file. If content is not set, download the file from there.
    * @param {string} entityPath - '{entity_type_id}/{type_id}/{field_id}', e.g. 'media/image/field_media_image'.
    * @param {Object} [options] - Additional options (currently none defined)
    * @param {function} callback - The callback will receive (err, file)
@@ -189,6 +190,17 @@ class DrupalREST {
     const headers = { ...this.sessionHeaders }
     headers['Content-Type'] = 'application/octet-stream'
     headers['Content-Disposition'] = 'file; filename="' + file.filename + '"'
+
+    if (!file.content) {
+      if (file.src) {
+        return fetch(file.src)
+          .then(req => req.blob())
+          .then(body => {
+            file.content = body
+            this.fileUpload(file, entityPath, options, callback)
+          })
+      }
+    }
 
     fetch(this.options.url + '/file/upload/' + entityPath + '?_format=json', {
       method: 'post',
