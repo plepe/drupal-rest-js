@@ -74,6 +74,32 @@ class DrupalREST {
       }))
   }
 
+  /**
+   * Load a path in the drupal.
+   * @param {string} path - Path within drupal, e.g. 'node/1'
+   * @param {Object} [options] - Additional options (currently none defined)
+   * @param {function} callback - The callback will receive (err, content)
+   */
+  get (path, options, callback) {
+    if (typeof options === 'function') {
+      callback = options
+      options = {}
+    }
+
+    const url = this.options.url + '/' + path
+
+    fetch(url, {
+      headers: this.sessionHeaders
+    })
+      .then(req => req.text())
+      .then(body => {
+        global.setTimeout(() => callback(null, body), 0)
+      })
+      .catch(error => {
+        global.setTimeout(() => callback(error), 0)
+      })
+  }
+
   entityGet (entityType, id, options, callback) {
     const def = entityConfiguration[entityType]
     if (typeof options === 'function') {
