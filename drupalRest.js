@@ -132,7 +132,7 @@ class DrupalREST {
 
     async.eachOf(
       content,
-      (a, key, done) => async.eachOf(a, (value, index, done) => {
+      (a, key, done) => async.eachOfSeries(a, (value, index, done) => {
         if (value.data) {
           if (value.target_type === 'fileUpload') {
             this.fileUpload(value.data, [entityType, content.type[0].target_id, key].join('/'), {},
