@@ -66,7 +66,7 @@ class DrupalREST {
         }
         return req.text()
       })
-      .then(body => processJSONResult(body, (err, data) => {
+      .then(body => this.processJSONResult(body, (err, data) => {
         if (err) { return callback(err) }
 
         this.sessionHeaders['X-CSRF-Token'] = data.csrf_token
@@ -112,7 +112,7 @@ class DrupalREST {
       headers: this.sessionHeaders
     })
       .then(req => req.text())
-      .then(body => processJSONResult(body, callback))
+      .then(body => this.processJSONResult(body, callback))
       .catch(error => {
         global.setTimeout(() => callback(error), 0)
       })
@@ -157,7 +157,7 @@ class DrupalREST {
           }
         })
           .then(req => req.text())
-          .then(body => processJSONResult(body, callback))
+          .then(body => this.processJSONResult(body, callback))
           .catch(error => {
             console.error('saving ' + entityType + '/' + id + ':', error)
             global.setTimeout(() => callback(error), 0)
@@ -187,7 +187,7 @@ class DrupalREST {
           return global.setTimeout(() => callback(null), 0)
         }
 
-        processJSONResult(body, callback)
+        this.processJSONResult(body, callback)
       })
       .catch(error => {
         console.error('deleting ' + entityType + '/' + id + ':', error)
@@ -258,7 +258,7 @@ class DrupalREST {
       headers
     })
       .then(req => req.text())
-      .then(body => processJSONResult(body, callback))
+      .then(body => this.processJSONResult(body, callback))
       .catch(error => {
         console.error('uploading ' + entityPath + ':', error)
         global.setTimeout(() => callback(error), 0)
@@ -435,23 +435,23 @@ class DrupalREST {
       (err) => callback(err, result)
     )
   }
-}
 
-function processJSONResult (body, callback) {
-  let data = null
-  let error = null
-  try {
-    data = JSON.parse(body)
-  } catch (e) {
-    error = new Error(body)
+  processJSONResult (body, callback) {
+    let data = null
+    let error = null
+    try {
+      data = JSON.parse(body)
+    } catch (e) {
+      error = new Error(body)
+    }
+
+    if (data && 'message' in data) {
+      error = new Error(data.message)
+      data = null
+    }
+
+    global.setTimeout(() => callback(error, data), 0)
   }
-
-  if (data && 'message' in data) {
-    error = new Error(data.message)
-    data = null
-  }
-
-  global.setTimeout(() => callback(error, data), 0)
 }
 
 module.exports = DrupalREST
