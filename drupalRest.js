@@ -117,7 +117,19 @@ class DrupalREST {
       headers: this.sessionHeaders
     })
       .then(req => req.text())
-      .then(body => this.processJSONResult(body, callback))
+      .then(body => this.processJSONResult(body, (err, result) => {
+        if (err) { return callback(err) }
+
+        async.each(options.includeReferences, (fieldId, done) => {
+          async.eachOf(result[options.includeFields], (value, index, done) => {
+            this.entityGet(value.target_type, value.target_id, (err, data) => {
+              if (err) { return done(err) }
+              result[options.includeFields][index].data = data
+              done()
+            })
+          }, done)
+        }, (err) => callback(err, result))
+      }))
       .catch(error => {
         global.setTimeout(() => callback(error), 0)
       })
@@ -204,6 +216,7 @@ class DrupalREST {
    * Load the JSON structure for a node
    * @param {number} id - ID of the node
    * @param {Object} [options] - Additional options (currently none defined)
+   * @param {string[]} [options.includeReferences] - For the listed fields, load referenced content into the 'data' attribute.
    * @param {function} callback - The callback will receive (err, content)
    */
   nodeGet (id, options, callback) {
@@ -274,6 +287,7 @@ class DrupalREST {
    * Load the JSON structure for a taxonomy term
    * @param {number} id - ID of the taxonomy term
    * @param {Object} [options] - Additional options (currently none defined)
+   * @param {string[]} [options.includeReferences] - For the listed fields, load referenced content into the 'data' attribute.
    * @param {function} callback - The callback will receive (err, content)
    */
   taxonomyGet (id, options, callback) {
@@ -305,6 +319,7 @@ class DrupalREST {
    * Load the JSON structure for a media entity
    * @param {number} id - ID of the media entity
    * @param {Object} [options] - Additional options (currently none defined)
+   * @param {string[]} [options.includeReferences] - For the listed fields, load referenced content into the 'data' attribute.
    * @param {function} callback - The callback will receive (err, content)
    */
   mediaGet (id, options, callback) {
@@ -336,6 +351,7 @@ class DrupalREST {
    * Load the JSON structure for a user
    * @param {number} id - ID of the user
    * @param {Object} [options] - Additional options (currently none defined)
+   * @param {string[]} [options.includeReferences] - For the listed fields, load referenced content into the 'data' attribute.
    * @param {function} callback - The callback will receive (err, content)
    */
   userGet (id, options, callback) {
@@ -367,6 +383,7 @@ class DrupalREST {
    * Load the JSON structure for a file entity
    * @param {number} id - ID of the file
    * @param {Object} [options] - Additional options (currently none defined)
+   * @param {string[]} [options.includeReferences] - For the listed fields, load referenced content into the 'data' attribute.
    * @param {function} callback - The callback will receive (err, content)
    */
   fileGet (id, options, callback) {
@@ -398,6 +415,7 @@ class DrupalREST {
    * Load the JSON structure for a paragraph entity
    * @param {number} id - ID of the paragraph
    * @param {Object} [options] - Additional options (currently none defined)
+   * @param {string[]} [options.includeReferences] - For the listed fields, load referenced content into the 'data' attribute.
    * @param {function} callback - The callback will receive (err, content)
    */
   paragraphGet (id, options, callback) {
