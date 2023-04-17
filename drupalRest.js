@@ -20,6 +20,11 @@ const entityConfiguration = {
     entityHandle: 'entity/file/%',
     idField: 'fid'
   },
+  paragraph: {
+    entityHandle: 'entity/paragraph/%',
+    createHandle: 'entity/paragraph',
+    idField: 'pid'
+  },
   user: {
     entityHandle: 'user/%',
     createHandle: 'entity/user',
@@ -387,6 +392,37 @@ class DrupalREST {
    */
   fileRemove (id, options, callback) {
     this.entityRemove('file', id, options, callback)
+  }
+
+  /**
+   * Load the JSON structure for a paragraph entity
+   * @param {number} id - ID of the paragraph
+   * @param {Object} [options] - Additional options (currently none defined)
+   * @param {function} callback - The callback will receive (err, content)
+   */
+  paragraphGet (id, options, callback) {
+    this.entityGet('paragraph', id, options, callback)
+  }
+
+  /**
+   * Change an existing paragraph
+   * @param {number} id - ID of the paragraph
+   * @param {Object} content - The content to change
+   * @param {Object} [options] - Additional options (currently none defined)
+   * @param {function} callback - The callback will receive (err, content)
+   */
+  paragraphSave (id, content, options, callback) {
+    this.entitySave('paragraph', id, content, options, callback)
+  }
+
+  /**
+   * Remove a paragraph
+   * @param {number} id - ID of the paragraph
+   * @param {Object} [options] - Additional options (currently none defined)
+   * @param {function} callback - The callback will receive (err). If err is null, the paragraph has been successfully removed.
+   */
+  paragraphRemove (id, options, callback) {
+    this.entityRemove('paragraph', id, options, callback)
   }
 
   /**
