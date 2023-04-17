@@ -154,6 +154,18 @@ class DrupalREST {
                 done()
               }
             )
+          } else {
+            const childDef = entityConfiguration[value.target_type]
+
+            //value.data.parent_id = 
+
+            this.entitySave(value.target_type, value.target_id, value.data,
+              (err, result) => {
+                if (err) { return done(err) }
+                content[key][index].target_id = result[childDef.idField][0].value
+                done()
+              }
+            )
           }
         }
         else {
