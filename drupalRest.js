@@ -120,19 +120,23 @@ class DrupalREST {
       .then(body => this.processJSONResult(body, (err, result) => {
         if (err) { return callback(err) }
 
-        async.each(options.includeReferences, (fieldId, done) => {
-          async.eachOf(result[fieldId], (value, index, done) => {
-            this.entityGet(value.target_type, value.target_id, (err, data) => {
-              if (err) { return done(err) }
-              result[fieldId][index].data = data
-              done()
-            })
-          }, done)
-        }, (err) => callback(err, result))
+        this._entityLoad(result, options, callback)
       }))
       .catch(error => {
         global.setTimeout(() => callback(error), 0)
       })
+  }
+
+  _entityLoad (result, options, callback) {
+    async.each(options.includeReferences, (fieldId, done) => {
+      async.eachOf(result[fieldId], (value, index, done) => {
+        this.entityGet(value.target_type, value.target_id, (err, data) => {
+          if (err) { return done(err) }
+          result[fieldId][index].data = data
+          done()
+        })
+      }, done)
+    }, (err) => callback(err, result))
   }
 
   entitySave (entityType, id, content, options, callback) {
