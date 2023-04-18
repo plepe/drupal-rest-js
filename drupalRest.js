@@ -486,7 +486,8 @@ class DrupalREST {
     async.doWhilst(
       (callback) => {
         if (endPage !== null && page > endPage) {
-          return callback(null, result)
+          notDone = false
+          return callback()
         }
 
         fetch(this.options.url + '/' + path + sep + 'page=' + page + '&_format=json', {
