@@ -460,6 +460,8 @@ class DrupalREST {
    * @param {string} path - The path of the REST view
    * @param {Object} options - Options
    * @param {boolean} [options.paginated=true] - If true, keep retrieving all pages of the view, until an empty result is returned.
+   * @param {number} [options.startPage=0] - Starting page
+   * @param {number} [options.endPage=null] - Load until page n has been reached (including this page). If null, do not stop loading.
    * @param {function} [options.each] - A function which will be called for every item as soon as it is loaded. Called with (item, index).
    * @param {function} callback - The callback will receive (err, list). List is an array of all results.
    */
@@ -469,12 +471,17 @@ class DrupalREST {
     }
 
     const sep = path.includes('?') ? '&' : '?'
-    let page = 0
+    let page = options.startPage || 0
+    let endPage = options.endPage || null
     let notDone = true
     let result = []
 
     async.doWhilst(
       (callback) => {
+        if (endPage !== null && page > endPage) {
+          return callback(null, result)
+        }
+
         fetch(this.options.url + '/' + path + sep + 'page=' + page + '&_format=json', {
           headers: this.sessionHeaders
         })
