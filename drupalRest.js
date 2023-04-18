@@ -473,6 +473,9 @@ class DrupalREST {
     const sep = path.includes('?') ? '&' : '?'
     let page = options.startPage || 0
     let endPage = options.endPage || null
+    if (options.paginated === false) {
+      endPage = page
+    }
     let notDone = true
     let result = []
 
