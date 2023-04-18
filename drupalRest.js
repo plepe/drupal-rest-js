@@ -467,6 +467,7 @@ class DrupalREST {
    * @param {number} [options.startPage=0] - Starting page
    * @param {number} [options.endPage=null] - Load until page n has been reached (including this page). If null, do not stop loading.
    * @param {function} [options.each] - A function which will be called for every item as soon as it is loaded. Called with (item, index).
+   * @param {string[]} [options.includeReferences] - For the listed fields, load referenced content into the 'data' attribute.
    * @param {function} callback - The callback will receive (err, list). List is an array of all results.
    */
   loadRestExport (path, options, callback) {
@@ -500,12 +501,26 @@ class DrupalREST {
             }
 
             page++
-	    if (options.each) {
-	      data.forEach((item, i) => options.each(item, i + result.length))
-	    }
 
-            result = result.concat(data)
-            callback()
+            async.eachOfSeries(data, (item, i, done) => {
+              this._entityLoad(item, options,
+                (err, item) => {
+                  if (err) { return done(err) }
+
+                  if (options.each) {
+                    options.each(item, i + result.length)
+                  }
+
+                  done()
+                }
+              )
+            }, (err) => {
+              if (err) { return callback(err) }
+
+              result = result.concat(data)
+
+              callback()
+            })
           })
           .catch(error => {
             console.error('loading rest export ' + path + ':', error)
