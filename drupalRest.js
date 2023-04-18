@@ -121,10 +121,10 @@ class DrupalREST {
         if (err) { return callback(err) }
 
         async.each(options.includeReferences, (fieldId, done) => {
-          async.eachOf(result[options.includeFields], (value, index, done) => {
+          async.eachOf(result[fieldId], (value, index, done) => {
             this.entityGet(value.target_type, value.target_id, (err, data) => {
               if (err) { return done(err) }
-              result[options.includeFields][index].data = data
+              result[fieldId][index].data = data
               done()
             })
           }, done)
