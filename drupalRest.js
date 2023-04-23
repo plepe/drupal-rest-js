@@ -176,7 +176,6 @@ class DrupalREST {
       }, done),
       (err) => {
         if (err) { return callback(err) }
-        console.log(content)
 
         const url = this.options.url + '/' + (id ? def.entityHandle.replace('%', id) : def.createHandle)
         fetch(url + '?_format=json', {
