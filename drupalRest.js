@@ -154,7 +154,8 @@ class DrupalREST {
             this.fileUpload(value.data, [entityType, content.type[0].target_id, key].join('/'), {},
               (err, result) => {
                 if (err) { return done(err) }
-                content[key][index].target_id = result.fid[0].value
+                content[key][index] = { target_id: result.fid[0].value }
+                delete content[key][index].data
                 done()
               }
             )
@@ -164,7 +165,7 @@ class DrupalREST {
             this.entitySave(value.target_type, value.target_id, value.data,
               (err, result) => {
                 if (err) { return done(err) }
-                content[key][index].target_id = result[childDef.idField][0].value
+                content[key][index] = { target_id: result[childDef.idField][0].value }
                 done()
               }
             )
