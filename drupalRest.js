@@ -530,10 +530,17 @@ class DrupalREST {
           return callback()
         }
 
-        fetch(this.options.url + '/' + path + sep + 'page=' + page + '&_format=json', {
+        const url = this.options.url + '/' + path + sep + 'page=' + page + '&_format=json'
+        fetch(url, {
           headers: this.sessionHeaders
         })
-          .then(req => req.json())
+          .then(req => {
+            if (req.status !== 200) {
+              throw(new Error('Error loading ' + url + ': ' + req.statusText))
+            }
+
+            return req.json()
+          })
           .then(data => {
             if (data.length === 0) {
               notDone = false
@@ -562,7 +569,6 @@ class DrupalREST {
             })
           })
           .catch(error => {
-            console.error('loading rest export ' + path + ':', error)
             callback(error)
           })
       },
