@@ -42,6 +42,7 @@ class DrupalREST {
   constructor (options) {
     this.options = options
     this.sessionHeaders = {}
+    this.loginCallbacks = []
   }
 
   /**
@@ -49,9 +50,13 @@ class DrupalREST {
    * @param {function} callback
    */
   login (callback) {
+    this.loginCallbacks.push(callback)
+
     if (!this.options.user) {
       // anonymous access
-      return callback(null)
+      const cbs = this.loginCallbacks
+      this.loginCallbacks = null
+      return cbs.forEach(cb => cb(null))
     }
 
     fetch(this.options.url + '/user/login?_format=json', {
@@ -75,7 +80,9 @@ class DrupalREST {
         if (err) { return callback(err) }
 
         this.sessionHeaders['X-CSRF-Token'] = data.csrf_token
-        callback(null)
+        const cbs = this.loginCallbacks
+        this.loginCallbacks = null
+        cbs.forEach(cb => cb(null))
       }))
   }
 
@@ -89,6 +96,13 @@ class DrupalREST {
     if (typeof options === 'function') {
       callback = options
       options = {}
+    }
+
+    if (this.loginCallbacks) {
+      return this.login((err) => {
+        if (err) { return callback(err) }
+        this.get(path, options, callback)
+      })
     }
 
     const url = this.options.url + '/' + path
@@ -110,6 +124,13 @@ class DrupalREST {
     if (typeof options === 'function') {
       callback = options
       options = {}
+    }
+
+    if (this.loginCallbacks) {
+      return this.login((err) => {
+        if (err) { return callback(err) }
+        this.entityGet(path, options, callback)
+      })
     }
 
     const url = this.options.url + '/' + def.entityHandle.replace('%', id)
@@ -144,6 +165,13 @@ class DrupalREST {
     if (typeof options === 'function') {
       callback = options
       options = {}
+    }
+
+    if (this.loginCallbacks) {
+      return this.login((err) => {
+        if (err) { return callback(err) }
+        this.entitySave(path, options, callback)
+      })
     }
 
     async.eachOf(
@@ -201,6 +229,13 @@ class DrupalREST {
     if (typeof options === 'function') {
       callback = options
       options = {}
+    }
+
+    if (this.loginCallbacks) {
+      return this.login((err) => {
+        if (err) { return callback(err) }
+        this.entityRemove(path, options, callback)
+      })
     }
 
     const url = this.options.url + '/' + def.entityHandle.replace('%', id)
@@ -470,6 +505,13 @@ class DrupalREST {
   loadRestExport (path, options, callback) {
     if (!('paginated' in options)) {
       options.paginated = true
+    }
+
+    if (this.loginCallbacks) {
+      return this.login((err) => {
+        if (err) { return callback(err) }
+        this.loadRestExport(path, options, callback)
+      })
     }
 
     const sep = path.includes('?') ? '&' : '?'
