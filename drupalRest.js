@@ -52,6 +52,10 @@ class DrupalREST {
   login (callback) {
     this.loginCallbacks.push(callback)
 
+    if (this.loginCallbacks.length > 1) {
+      return
+    }
+
     if (!this.options.user) {
       // anonymous access
       const cbs = this.loginCallbacks
