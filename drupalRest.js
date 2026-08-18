@@ -1,4 +1,5 @@
 const async = require('async')
+const fs = require('fs')
 
 const entityConfiguration = {
   node: {
@@ -301,6 +302,7 @@ class DrupalREST {
    * @param {Object} file - A structure describing the file
    * @param {string} file.filename - Filename of the file
    * @param {*} [file.content] - Content of the file (whatever fetch accepts, e.g. string, Blob, ...)
+   * @param {string} [file.localPath] - Content of the file has been downloaded to this local path. Will be read from there for upload.
    * @param {string} [file.src] - Source of the file. If content is not set, download the file from there.
    * @param {string} entityPath - '{entity_type_id}/{type_id}/{field_id}', e.g. 'media/image/field_media_image'.
    * @param {Object} [options] - Additional options (currently none defined)
@@ -312,7 +314,13 @@ class DrupalREST {
     headers['Content-Disposition'] = 'file; filename="' + file.filename + '"'
 
     if (!file.content) {
-      if (file.src) {
+      if (file.localPath) {
+        return fs.readFile(file.localPath, (err, content) => {
+          if (err) { callback(err) }
+          file.content = content
+          this.fileUpload(file, entityPath, options, callback)
+        })
+      } else if (file.src) {
         return fetch(file.src)
           .then(req => req.blob())
           .then(body => {
