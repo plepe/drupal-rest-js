@@ -1,5 +1,6 @@
 const async = require('async')
 const fs = require('fs')
+const path = require('path')
 
 const entityConfiguration = {
   node: {
@@ -300,7 +301,7 @@ class DrupalREST {
   /**
    * Upload a file
    * @param {Object} file - A structure describing the file
-   * @param {string} file.filename - Filename of the file
+   * @param {string} [file.filename] - Filename of the file (mandatory, if neither src nor localPath are set)
    * @param {*} [file.content] - Content of the file (whatever fetch accepts, e.g. string, Blob, ...)
    * @param {string} [file.localPath] - Content of the file has been downloaded to this local path. Will be read from there for upload.
    * @param {string} [file.src] - Source of the file. If content is not set, download the file from there.
@@ -309,6 +310,16 @@ class DrupalREST {
    * @param {function} callback - The callback will receive (err, file)
    */
   fileUpload (file, entityPath, options, callback) {
+    if (!file.filename) {
+      if (file.src) {
+        file.filename = path.basename(file.src)
+      } else if (file.localPath) {
+        file.filename = path.basename(file.localPath)
+      } else {
+        return callback(new Error('no filename set'))
+      }
+    }
+
     const headers = { ...this.sessionHeaders }
     headers['Content-Type'] = 'application/octet-stream'
     headers['Content-Disposition'] = 'file; filename="' + file.filename + '"'
